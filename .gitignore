@@ -4,4 +4,4 @@ build/
 *.iml
 .idea/
 scripts/
-!scripts/.gitignore
+!scripts/.gitkeep

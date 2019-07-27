@@ -1,5 +1,5 @@
-setlocal enabledelayedexpansion
 @if "%DEBUG%"=="" @echo off
+setlocal enabledelayedexpansion
 @rem #########################################################
 @rem Run the specified jenkins task
 @rem #########################################################
