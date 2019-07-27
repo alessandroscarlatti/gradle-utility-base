@@ -1,0 +1,20 @@
+apply plugin: 'groovy'
+
+dependencies {
+    compile localGroovy()
+}
+
+sourceSets {
+    scripts {
+        groovy.srcDirs += "scripts"
+        compileClasspath += files(sourceSets.main.compileClasspath, sourceSets.main.output)
+        runtimeClasspath += files(sourceSets.main.runtimeClasspath, sourceSets.main.output)
+    }
+}
+
+task jenkins(type: JavaExec) {
+    doFirst {
+        main = System.getenv("jenkins.task")
+    }
+    classpath = sourceSets.scripts.runtimeClasspath
+}
