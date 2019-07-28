@@ -5,6 +5,6 @@ setlocal enabledelayedexpansion
 @rem #########################################################
 set "jenkins.task=%1"
 echo Running script %1.groovy
-rem gradlew --stacktrace jenkins
+gradlew --stacktrace jenkins
 
-groovy -cp build/libs/groovy-project-demo.jar scripts/%1.groovy
+rem groovy -cp build/libs/groovy-project-demo.jar scripts/%1.groovy
