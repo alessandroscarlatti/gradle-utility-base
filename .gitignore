@@ -1,7 +1,10 @@
+# First, ignore everything
+*
+# Now, whitelist anything that's a directory
+!*/
 out/
 build/
 .gradle/
 *.iml
 .idea/
-scripts/
 !scripts/.gitkeep
