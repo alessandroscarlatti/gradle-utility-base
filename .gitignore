@@ -7,4 +7,4 @@ build/
 .gradle/
 *.iml
 .idea/
-!scripts/.gitkeep
+!scripts/.gitignore
