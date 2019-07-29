@@ -37,12 +37,13 @@ class GitAgent {
         repositoryScript.call()
     }
 
-    class RepositoryHandler extends DelegatingGitExecutor {
+    class RepositoryHandler implements GitExecutor {
 
         private Path repositoryDir
+        private GitExecutor gitExecutor
 
         RepositoryHandler(Path repositoryDir, String url) {
-            super(new GroovyGitExecutor(repositoryDir, url))
+            gitExecutor = new GroovyGitExecutor(repositoryDir, url)
             this.repositoryDir = repositoryDir
             Files.createDirectories(repositoryDir)
         }
@@ -90,6 +91,46 @@ class GitAgent {
         void modify(Path file, Consumer<Path> modifyScript) {
             modifyScript.accept(file)
             stage(file)
+        }
+
+        @Override
+        void shallowClone(String revision) {
+            gitExecutor.shallowClone(revision)
+        }
+
+        @Override
+        void checkout(String revision) {
+            gitExecutor.checkout(revision)
+        }
+
+        @Override
+        void pull() {
+            gitExecutor.pull()
+        }
+
+        @Override
+        void reset(boolean hard) {
+            gitExecutor.reset(hard)
+        }
+
+        @Override
+        void stageAll() {
+            gitExecutor.stageAll()
+        }
+
+        @Override
+        void stage(Path file) {
+            gitExecutor.stage(file)
+        }
+
+        @Override
+        void commit(String message) {
+            gitExecutor.commit(message)
+        }
+
+        @Override
+        void push(String upstream = null) {
+            gitExecutor.push()
         }
     }
 }

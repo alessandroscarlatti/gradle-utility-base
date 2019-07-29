@@ -12,9 +12,19 @@ sourceSets {
     }
 }
 
-task jenkins(type: JavaExec) {
-    doFirst {
-        main = System.getenv("jenkins.task")
+// create tasks for each script
+File[] files = file("scripts").listFiles()
+for (File file : files) {
+    if (file.name.endsWith(".groovy")) {
+        String scriptName = file.name.replace(".groovy", "")
+        project.task([type: JavaExec], scriptName) {
+            group = "scripts"
+            description = "Execute ${scriptName}.groovy"
+            it.main = scriptName
+            it.classpath = sourceSets.scripts.runtimeClasspath
+            doFirst {
+                logger.lifecycle("Executing script ${scriptName}.groovy")
+            }
+        }
     }
-    classpath = sourceSets.scripts.runtimeClasspath
 }

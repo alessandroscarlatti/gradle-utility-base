@@ -1,5 +1,7 @@
 package productivitycommons.git
 
+import productivitycommons.task.ProcessUtils
+
 import java.nio.file.Path
 
 /**
@@ -16,26 +18,10 @@ class GroovyGitExecutor implements GitExecutor {
         this.repositoryUrl = repositoryUrl
     }
 
-    private static List<String> getEnvironment() {
-        return System.getenv().collect { k, v -> "$k=$v" }
-    }
-
     private void exec(String commandLine, Path workingDir = null) {
         if (workingDir == null)
             workingDir = repository
-        println repository.parent.toString() + ">" + commandLine
-        Process process = ("cmd /c " + commandLine).execute(getEnvironment(), workingDir.toFile())
-
-        def out = new StringBuffer()
-        def err = new StringBuffer()
-        process.consumeProcessOutput(out, err)
-        process.waitFor()
-        if (out.size() > 0) println out
-        if (err.size() > 0) println err
-
-        if (process.exitValue() != 0) {
-            throw new RuntimeException("Error running command: " + commandLine)
-        }
+        ProcessUtils.exec(commandLine, workingDir)
     }
 
     @Override
