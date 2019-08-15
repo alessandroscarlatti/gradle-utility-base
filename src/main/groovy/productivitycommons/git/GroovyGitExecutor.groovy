@@ -18,10 +18,14 @@ class GroovyGitExecutor implements GitExecutor {
         this.repositoryUrl = repositoryUrl
     }
 
-    private void exec(String commandLine, Path workingDir = null) {
+    private ProcessUtils.ExecResult exec(String commandLine, Path workingDir = null) {
         if (workingDir == null)
             workingDir = repository
-        ProcessUtils.exec(commandLine, workingDir)
+        ProcessUtils.ExecResult result = ProcessUtils.exec(commandLine, workingDir)
+        if (result.exitCode != 0)
+            throw new RuntimeException("Error ")
+
+        return result
     }
 
     @Override
@@ -65,5 +69,35 @@ class GroovyGitExecutor implements GitExecutor {
             exec "git push"
         else
             exec "git push -u ${upstream}"
+    }
+
+    @Override
+    void merge(String from) {
+        try {
+            exec "git merge origin ${from}"
+        } catch (Exception e) {
+            try {
+                exec "git merge --abort"
+            } catch (Exception e2) {
+                new RuntimeException("Failed to abort merge!", e2).printStackTrace()
+            } finally {
+                throw new RuntimeException("Failed to merge!", e)
+            }
+        }
+    }
+
+    @Override
+    void fetch(String revision) {
+        exec "git fetch ${revision}"
+    }
+
+    @Override
+    void createBranch(String name) {
+        exec "git branch ${name}"
+    }
+
+    @Override
+    void setBranchUpstream(String upstream, String branch) {
+        exec "git branch --set-upstream-to=${upstream} ${branch}"
     }
 }

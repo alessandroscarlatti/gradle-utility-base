@@ -23,4 +23,12 @@ interface GitExecutor {
     void commit(String message)
 
     void push(String upstream)
+
+    void merge(String from)
+
+    void fetch(String revision)
+
+    void createBranch(String name)
+
+    void setBranchUpstream(String upstream, String branch)
 }

@@ -1,5 +1,7 @@
 package productivitycommons.git
 
+import productivitycommons.task.ProcessUtils
+
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -48,6 +50,10 @@ class GitAgent {
             Files.createDirectories(repositoryDir)
         }
 
+        void exec(String commandLine, boolean ignoreExitValue = true) {
+            ProcessUtils.exec(commandLine, repositoryDir, ignoreExitValue)
+        }
+
         /**
          * Resolve a file relative to the repository root.
          * @param path relative path
@@ -57,6 +63,15 @@ class GitAgent {
             if (path == null)
                 return repositoryDir
             return repositoryDir.resolve(path)
+        }
+
+        void withFile(String path = null, Consumer<Path> script) {
+            if (path == null) {
+                script.accept(repositoryDir)
+                return
+            }
+
+            script.accept(repositoryDir.resolve(path))
         }
 
         /**
@@ -83,6 +98,13 @@ class GitAgent {
             }
         }
 
+        void useNewBranch(String baseBranch, String newBranch) {
+            useRevisionHard(baseBranch)
+            createBranch(newBranch)
+            checkout(newBranch)
+            setBranchUpstream("origin", newBranch)
+        }
+
         void commitAndPush(String message) {
             commit(message)
             push()
@@ -91,6 +113,12 @@ class GitAgent {
         void modify(Path file, Consumer<Path> modifyScript) {
             modifyScript.accept(file)
             stage(file)
+        }
+
+        void mergeBranches(String from, String to) {
+            useRevisionHard(to)
+            fetch(from)
+            merge()
         }
 
         @Override
@@ -130,7 +158,27 @@ class GitAgent {
 
         @Override
         void push(String upstream = null) {
-            gitExecutor.push()
+            gitExecutor.push(upstream)
+        }
+
+        @Override
+        void merge(String from) {
+            gitExecutor.merge(from)
+        }
+
+        @Override
+        void fetch(String revision) {
+            gitExecutor.fetch(revision)
+        }
+
+        @Override
+        void createBranch(String name) {
+            gitExecutor.createBranch(name)
+        }
+
+        @Override
+        void setBranchUpstream(String upstream, String branch) {
+            gitExecutor.setBranchUpstream(upstream, branch)
         }
     }
 }
